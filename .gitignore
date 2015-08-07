@@ -1,3 +1,7 @@
+# IDE and OS
+.DS_Store
+.idea
+
 # Logs
 logs
 *.log
@@ -26,11 +30,13 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
 node_modules
 
-# IDE and OS
-.DS_Store
-.idea
-
 # Temporary
 tmp
+
+bower_components
+npm-debug.log
+bundle.js
 local.yml
-.npmrc
+
+**/config/local.json
+

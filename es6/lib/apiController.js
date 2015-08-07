@@ -97,7 +97,6 @@ function apiController(options, knexClient) {
         .map(prepareResponse)
         .then(createApiResponse)
         .catch(reply);
-
     },
 
     show(request, reply) {
