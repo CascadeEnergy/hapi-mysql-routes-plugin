@@ -4,8 +4,8 @@ import config from 'config';
 import {Server} from 'hapi';
 import good from 'good';
 import goodConsole from 'good-console';
-import hapiRoutes from '../index';
-import pkg from '../../package.json';
+import hapiRoutes from '../es6/index';
+import pkg from './package.json';
 
 const port = 9000;
 const server = new Server();
