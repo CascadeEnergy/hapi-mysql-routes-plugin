@@ -72,6 +72,8 @@ function apiController(options, knexClient) {
       }
 
       function createApiResponse(result) {
+        console.log(result.length);
+
         var apiResponse = {
           limit: null,
           cursor: null,
@@ -84,7 +86,10 @@ function apiController(options, knexClient) {
         }
 
         apiResponse.limit = request.query.limit;
-        apiResponse.cursor = request.query.cursor + 1;
+
+        if (result.length === request.query.limit) {
+          apiResponse.cursor = request.query.cursor + 1;
+        }
 
         reply(apiResponse);
       }

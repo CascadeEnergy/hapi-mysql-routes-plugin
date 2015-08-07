@@ -43,8 +43,8 @@ api.register(
         version: pkg.version,
         tags: ['api'],
         mysqlConfig: config.mysql, //required
-        tableName: 'test', //required
-        index: 'id', //required
+        tableName: 'unique_object', //required
+        index: 'uid', //required
         tableHeaderFormat: 'snakeCase', //required - another value - camelCase
         validateListQuerySchema: listQueryValidationSchema //optional
       }
