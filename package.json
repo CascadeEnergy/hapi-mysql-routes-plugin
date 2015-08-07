@@ -19,9 +19,9 @@
     "test": "./node_modules/.bin/gulp coverage"
   },
   "bugs": {
-    "url": "https://github.com/jinsyaoommen@gmail.com/hapi-mysql-routes-plugin/issues"
+    "url": "https://github.com/cascadeenergy/hapi-mysql-routes-plugin/issues"
   },
-  "homepage": "https://github.com/jinsyaoommen@gmail.com/hapi-mysql-routes-plugin#readme",
+  "homepage": "https://github.com/cascadeenergy/hapi-mysql-routes-plugin#readme",
   "devDependencies": {
     "babel": "^5.2.17",
     "bluebird": "^2.9.25",
@@ -42,6 +42,7 @@
     "babel-runtime": "^5.2.17",
     "boom": "^2.7.1",
     "hapi": "^8.8.0",
+    "joi": "^6.4.1",
     "knex": "^0.8.6",
     "lodash": "^3.6.0",
     "mysql": "^2.8.0"

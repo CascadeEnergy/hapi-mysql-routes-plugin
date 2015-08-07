@@ -1,15 +1,15 @@
 'use strict';
 // jshint -W040
 
-var Boom = require('boom');
-var camelCase = require('lodash/string/camelCase');
-var first = require('lodash/array/first');
-var forEach = require('lodash/collection/forEach');
-var isEmpty = require('lodash/lang/isEmpty');
-var mapKeys = require('lodash/object/mapKeys');
-var omit = require('lodash/object/omit');
-var rearg = require('lodash/function/rearg');
-var snakeCase = require('lodash/string/snakeCase');
+import Boom from 'boom';
+import camelCase from 'lodash/string/camelCase';
+import first from 'lodash/array/first';
+import forEach from 'lodash/collection/forEach';
+import isEmpty from 'lodash/lang/isEmpty';
+import mapKeys from 'lodash/object/mapKeys';
+import omit from 'lodash/object/omit';
+import rearg from 'lodash/function/rearg';
+import snakeCase from 'lodash/string/snakeCase';
 
 function apiController(options, knexClient) {
   return {
@@ -56,7 +56,11 @@ function apiController(options, knexClient) {
     list(request, reply) {
       function filterQuery() {
         function constructWhere(value, key) {
-          this.where(snakeCase(key), value);
+          if (options.tableHeaderFormat === 'snakeCase') {
+            this.where(snakeCase(key), value);
+          } else {
+            this.where(key, value);
+          }
         }
 
         forEach(omit(request.query, ['cursor', 'limit']), constructWhere, this);

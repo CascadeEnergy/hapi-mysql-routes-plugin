@@ -4,7 +4,8 @@ import config from 'config';
 import {Server} from 'hapi';
 import good from 'good';
 import goodConsole from 'good-console';
-import hapiRoutes from '../es6/index';
+import hapiRoutes from '../es6/hapi-mysql-routes-plugin';
+import Joi from 'joi';
 import pkg from './package.json';
 
 const port = 9000;
@@ -13,6 +14,10 @@ const server = new Server();
 server.connection({ port: port, labels: ['api'] });
 
 const api = server.select('api');
+
+let listQueryValidationSchema = {
+  name: Joi.string().optional()
+};
 
 api.register(
   [
@@ -37,16 +42,14 @@ api.register(
       options: {
         version: pkg.version,
         tags: ['api'],
-        mysqlConfig: config.mysql,
-        tableName: 'unique_object',
-        index: 'uid',
-        autoIncrement: false
+        mysqlConfig: config.mysql, //required
+        tableName: 'test', //required
+        index: 'id', //required
+        tableHeaderFormat: 'snakeCase', //required - another value - camelCase
+        validateListQuerySchema: listQueryValidationSchema //optional
       }
     }
   ],
-  {
-    select: ['api']
-  },
   function(err) {
     if (err) {
       server.log('error', err);

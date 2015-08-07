@@ -2,6 +2,7 @@
 
 import apiController from './lib/apiController';
 import knex from 'knex';
+import listValidationSchema from './lib/validationSchema/listValidationSchema';
 import pkg from '../package.json';
 
 function register(server, options, next) {
@@ -16,7 +17,7 @@ function register(server, options, next) {
     }
   });
 
-  var api = apiController(options, knexClient);
+  let api = apiController(options, knexClient);
 
   server.route([
     {
@@ -32,7 +33,10 @@ function register(server, options, next) {
       path: '/',
       handler: api.list,
       config: {
-        tags: options.tags
+        tags: options.tags,
+        validate: {
+          query: listValidationSchema(options)
+        }
       }
     },
     {
@@ -57,6 +61,7 @@ function register(server, options, next) {
       handler: api.destroy
     }
   ]);
+
   next();
 }
 
