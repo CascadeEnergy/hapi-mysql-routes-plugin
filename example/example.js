@@ -46,7 +46,8 @@ api.register(
         tableName: 'unique_object', //required
         index: 'uid', //required
         tableHeaderFormat: 'snakeCase', //required - another value - camelCase
-        validateListQuerySchema: listQueryValidationSchema //optional
+        validateListQuerySchema: listQueryValidationSchema //optional - this
+        //has to be a joi validation object
       }
     }
   ],

@@ -1,6 +1,6 @@
 'use strict';
 
-import apiController from './lib/apiController';
+import createRouteHandler from './lib/createRouteHandler';
 import knex from 'knex';
 import listValidationSchema from './lib/validationSchema/listValidationSchema';
 import pkg from '../package.json';
@@ -17,13 +17,13 @@ function register(server, options, next) {
     }
   });
 
-  let api = apiController(options, knexClient);
+  let routeHandler = createRouteHandler(options, knexClient);
 
   server.route([
     {
       method: 'GET',
       path: '/healthcheck',
-      handler: api.healthcheck,
+      handler: routeHandler.healthcheck,
       config: {
         tags: options.tags
       }
@@ -31,7 +31,7 @@ function register(server, options, next) {
     {
       method: 'GET',
       path: '/',
-      handler: api.list,
+      handler: routeHandler.list,
       config: {
         tags: options.tags,
         validate: {
@@ -42,7 +42,7 @@ function register(server, options, next) {
     {
       method: 'GET',
       path: '/{id}',
-      handler: api.show,
+      handler: routeHandler.show,
       config: {
         tags: options.tags
       }
@@ -50,7 +50,7 @@ function register(server, options, next) {
     {
       method: 'POST',
       path: '/',
-      handler: api.create,
+      handler: routeHandler.create,
       config: {
         tags: options.tags
       }
@@ -58,7 +58,7 @@ function register(server, options, next) {
     {
       method: 'DELETE',
       path: '/{id}',
-      handler: api.destroy
+      handler: routeHandler.destroy
     }
   ]);
 
