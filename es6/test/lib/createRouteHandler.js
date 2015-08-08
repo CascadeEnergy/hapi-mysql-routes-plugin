@@ -6,13 +6,13 @@ var assert = require('assert');
 var Bluebird = require('bluebird');
 var sinon = require('sinon');
 
-describe('apiController', function() {
-  var api;
+describe('createRouteHandler', function() {
+  var routeHandler;
   var knexClient;
   var options;
 
   beforeEach(function() {
-    var apiController;
+    var createRouteHandler;
 
     knexClient = {
       del: sinon.stub(),
@@ -34,9 +34,9 @@ describe('apiController', function() {
       index: 'id'
     };
 
-    apiController = require('../../lib/apiController');
+    createRouteHandler = require('../../lib/createRouteHandler');
 
-    api = apiController(options, knexClient);
+    routeHandler = createRouteHandler(options, knexClient);
   });
 
   describe('create', function() {
@@ -61,7 +61,7 @@ describe('apiController', function() {
       knexClient.table.returnsThis();
       knexClient.insert.returns(Bluebird.resolve([{ id: 100 }]));
 
-      api
+      routeHandler
         .create(request, reply)
         .then(function() {
           assert(knexClient.table.calledOnce);
@@ -77,7 +77,7 @@ describe('apiController', function() {
       knexClient.table.returnsThis();
       knexClient.insert.returns(Bluebird.reject(new Error('test-error')));
 
-      api
+      routeHandler
         .create(request, reply)
         .then(function() {
           assert.equal(reply.args[0][0].message, 'test-error');
@@ -110,7 +110,7 @@ describe('apiController', function() {
       knexClient.where.returnsThis();
       knexClient.del.returns(Bluebird.resolve(1));
 
-      api
+      routeHandler
         .destroy(request, reply)
         .then(function() {
           assert(knexClient.table.calledOnce);
@@ -129,7 +129,7 @@ describe('apiController', function() {
         knexClient.where.returnsThis();
         knexClient.del.returns(Bluebird.resolve(undefined));
 
-        api
+        routeHandler
           .destroy(request, reply)
           .then(function() {
             assert(knexClient.table.calledOnce);
@@ -147,7 +147,7 @@ describe('apiController', function() {
       knexClient.where.returnsThis();
       knexClient.del.returns(Bluebird.reject(new Error('test-error')));
 
-      api
+      routeHandler
         .destroy(request, reply)
         .then(function() {
           assert.equal(reply.args[0][0].message, 'test-error');
@@ -198,7 +198,7 @@ describe('apiController', function() {
             id: 100
           }]));
 
-        api
+        routeHandler
           .list(request, reply)
           .then(function() {
             var filterQuery;
@@ -236,7 +236,7 @@ describe('apiController', function() {
         knexClient.offset.returnsThis();
         knexClient.map.returns(Bluebird.resolve({}));
 
-        api
+        routeHandler
           .list(request, reply)
           .then(function() {
             assert(knexClient.table.calledOnce);
@@ -257,7 +257,7 @@ describe('apiController', function() {
       knexClient.offset.returnsThis();
       knexClient.map.returns(Bluebird.reject(new Error('test-error')));
 
-      api
+      routeHandler
         .list(request, reply)
         .then(function() {
           assert.equal(reply.args[0][0].message, 'test-error');
@@ -290,7 +290,7 @@ describe('apiController', function() {
         .first
         .returns(Bluebird.resolve({ name: 'test-name' }));
 
-      api
+      routeHandler
         .show(request, reply)
         .then(function() {
           assert(knexClient.table.calledOnce);
@@ -310,7 +310,7 @@ describe('apiController', function() {
         .first
         .returns(Bluebird.resolve({}));
 
-      api
+      routeHandler
         .show(request, reply)
         .then(function() {
           assert(knexClient.table.calledOnce);
@@ -328,7 +328,7 @@ describe('apiController', function() {
       knexClient.where.returnsThis();
       knexClient.first.returns(Bluebird.reject(new Error('test-error')));
 
-      api
+      routeHandler
         .show(request, reply)
         .then(function() {
           assert.equal(reply.args[0][0].message, 'test-error');
