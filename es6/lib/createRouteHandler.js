@@ -15,8 +15,14 @@ function apiController(options, knexClient) {
   return {
 
     create(request, reply) {
-      var snakeCaseKeys = rearg(snakeCase, [1, 0]);
-      var resource = mapKeys(request.payload, snakeCaseKeys);
+      var resource;
+
+      if (options.tableHeaderFormat === 'snakeCase') {
+        var snakeCaseKeys = rearg(snakeCase, [1, 0]);
+        resource = mapKeys(request.payload, snakeCaseKeys);
+      } else {
+        resource = request.payload;
+      }
 
       function createApiResponse(response) {
         let apiResponse = { };
