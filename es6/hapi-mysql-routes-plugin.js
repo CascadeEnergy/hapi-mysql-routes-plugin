@@ -23,8 +23,8 @@ function register(server, options, next) {
     knexClient,
     options.tableName,
     options.tableIndex,
-    options.keyInTransformFn,
-    options.keyOutTransformFn
+    options.requestTransformation,
+    options.responseTransformation
   );
 
   server.route([

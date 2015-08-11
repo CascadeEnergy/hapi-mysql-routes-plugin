@@ -38,9 +38,9 @@ api.register(
     {
       register: hapiMysqlRoutes,
       options: {
-        keyInTransformFn: snakeCase,
-        keyOutTransformFn: camelCase,
         mysqlConfig: config.mysql,
+        requestTransformation: snakeCase,
+        responseTransformation: camelCase,
         tags: ['api'],
         tableIndex: 'uid',
         tableName: 'unique_object',
