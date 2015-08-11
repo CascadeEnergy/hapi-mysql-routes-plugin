@@ -2,18 +2,19 @@
 //jshint camelcase: false
 //jshint maxstatements: false
 
-var assert = require('assert');
-var Bluebird = require('bluebird');
-var sinon = require('sinon');
+import assert from 'assert';
+import Bluebird from 'bluebird';
+import sinon from 'sinon';
 
-describe.skip('createRouteHandler', function() {
-  var routeHandler;
-  var knexClient;
-  var options;
+describe('createRouteHandler', () => {
+  const tableName = 'test-tableName';
+  const tableIndex = 'test-tableIndex';
+  const requestTransform = sinon.stub();
+  const responseTransform = sinon.stub();
+  let routeHandler;
+  let knexClient;
 
-  beforeEach(function() {
-    var createRouteHandler;
-
+  beforeEach(() => {
     knexClient = {
       del: sinon.stub(),
       first: sinon.stub(),
@@ -29,21 +30,22 @@ describe.skip('createRouteHandler', function() {
       where: sinon.stub()
     };
 
-    options = {
-      tableName: 'test-table',
-      index: 'id'
-    };
+    const createRouteHandler = require('../../lib/createRouteHandler');
 
-    createRouteHandler = require('../../lib/createRouteHandler');
-
-    routeHandler = createRouteHandler(options, knexClient);
+    routeHandler = createRouteHandler(
+      knexClient,
+      tableName,
+      tableIndex,
+      requestTransform,
+      responseTransform
+    );
   });
 
-  describe('create', function() {
-    var reply;
-    var request;
+  describe('create', () => {
+    let reply;
+    let request;
 
-    beforeEach(function() {
+    beforeEach(() => {
       reply = sinon.stub();
       request = {
         payload: {
@@ -53,17 +55,17 @@ describe.skip('createRouteHandler', function() {
       };
     });
 
-    afterEach(function() {
+    afterEach(() => {
       assert(reply.calledOnce);
     });
 
-    it('should create a row in the given mysql table', function(done) {
+    it('should create a row in the given mysql table', (done) => {
       knexClient.table.returnsThis();
       knexClient.insert.returns(Bluebird.resolve([{ id: 100 }]));
 
       routeHandler
         .create(request, reply)
-        .then(function() {
+        .then(() => {
           assert(knexClient.table.calledOnce);
           assert(knexClient.insert.calledOnce);
 
@@ -73,25 +75,25 @@ describe.skip('createRouteHandler', function() {
         });
     });
 
-    it('should catch error', function(done) {
+    it('should catch error', (done) => {
       knexClient.table.returnsThis();
       knexClient.insert.returns(Bluebird.reject(new Error('test-error')));
 
       routeHandler
         .create(request, reply)
-        .then(function() {
+        .then(() => {
           assert.equal(reply.args[0][0].message, 'test-error');
           done();
         });
     });
   });
 
-  describe('destroy', function() {
-    var reply;
-    var request;
-    var responseCode;
+  describe('destroy', () => {
+    let reply;
+    let request;
+    let responseCode;
 
-    beforeEach(function() {
+    beforeEach(() => {
       responseCode = {code: sinon.stub()};
       reply = sinon.stub().returns(responseCode);
       request = {
@@ -101,18 +103,18 @@ describe.skip('createRouteHandler', function() {
       };
     });
 
-    afterEach(function() {
+    afterEach(() => {
       assert(reply.calledOnce);
     });
 
-    it('should delete a row from the given mysql table', function(done) {
+    it('should delete a row from the given mysql table', (done) => {
       knexClient.table.returnsThis();
       knexClient.where.returnsThis();
       knexClient.del.returns(Bluebird.resolve(1));
 
       routeHandler
         .destroy(request, reply)
-        .then(function() {
+        .then(() => {
           assert(knexClient.table.calledOnce);
           assert(knexClient.where.calledOnce);
           assert(knexClient.del.calledOnce);
@@ -123,15 +125,14 @@ describe.skip('createRouteHandler', function() {
         });
     });
 
-    it('should return error if delete operation was not successful',
-      function(done) {
+    it('should return error if delete operation was not successful', (done) => {
         knexClient.table.returnsThis();
         knexClient.where.returnsThis();
         knexClient.del.returns(Bluebird.resolve(undefined));
 
         routeHandler
           .destroy(request, reply)
-          .then(function() {
+          .then(() => {
             assert(knexClient.table.calledOnce);
             assert(knexClient.where.calledOnce);
             assert(knexClient.del.calledOnce);
@@ -142,26 +143,26 @@ describe.skip('createRouteHandler', function() {
           });
       });
 
-    it('should catch error', function(done) {
+    it('should catch error', (done) => {
       knexClient.table.returnsThis();
       knexClient.where.returnsThis();
       knexClient.del.returns(Bluebird.reject(new Error('test-error')));
 
       routeHandler
         .destroy(request, reply)
-        .then(function() {
+        .then(() => {
           assert.equal(reply.args[0][0].message, 'test-error');
           done();
         });
     });
   });
 
-  describe('list', function() {
-    var reply;
-    var request;
-    var response;
+  describe('list', () => {
+    let reply;
+    let request;
+    let response;
 
-    beforeEach(function() {
+    beforeEach(() => {
       reply = sinon.stub();
       request = {
         query: {
@@ -178,14 +179,14 @@ describe.skip('createRouteHandler', function() {
       };
     });
 
-    afterEach(function() {
+    afterEach(() => {
       assert(reply.calledOnce);
     });
 
     it('should return a filtered/paginated list of rows from the given table',
-      function(done) {
-        var context;
-        var prepareResponse;
+      (done) => {
+        const context = { where: sinon.spy() };
+        let prepareResponse;
 
         knexClient.table.returnsThis();
         knexClient.where.returnsThis();
@@ -200,15 +201,14 @@ describe.skip('createRouteHandler', function() {
 
         routeHandler
           .list(request, reply)
-          .then(function() {
-            var filterQuery;
+          .then(() => {
+            let filterQuery;
 
             assert(knexClient.table.calledOnce);
             assert(knexClient.where.calledOnce);
             assert(knexClient.limit.calledOnce);
             assert(knexClient.offset.calledOnce);
 
-            context = { where: sinon.spy() };
             filterQuery = knexClient.where.args[0][0];
             filterQuery.bind(context)();
             assert(context.where.calledTwice);
@@ -216,10 +216,7 @@ describe.skip('createRouteHandler', function() {
             assert(context.where.args[1], [ 'id', 100 ]);
 
             prepareResponse = knexClient.map.args[0][0];
-            assert(
-              prepareResponse({ id: 100 }),
-              { id: 100 }
-            );
+            assert( prepareResponse({ id: 100 }), { id: 100 });
 
             assert(reply.args[0][0], response);
 
@@ -229,7 +226,7 @@ describe.skip('createRouteHandler', function() {
 
     it('should return an empty array when at the end of the paginated list' +
       ' of rows from the given mysql table',
-      function(done) {
+      (done) => {
         knexClient.table.returnsThis();
         knexClient.where.returnsThis();
         knexClient.limit.returnsThis();
@@ -238,7 +235,7 @@ describe.skip('createRouteHandler', function() {
 
         routeHandler
           .list(request, reply)
-          .then(function() {
+          .then(() => {
             assert(knexClient.table.calledOnce);
             assert(knexClient.where.calledOnce);
             assert(knexClient.limit.calledOnce);
@@ -250,7 +247,7 @@ describe.skip('createRouteHandler', function() {
           });
       });
 
-    it('should catch error', function(done) {
+    it('should catch error', (done) => {
       knexClient.table.returnsThis();
       knexClient.where.returnsThis();
       knexClient.limit.returnsThis();
@@ -259,18 +256,18 @@ describe.skip('createRouteHandler', function() {
 
       routeHandler
         .list(request, reply)
-        .then(function() {
+        .then(() => {
           assert.equal(reply.args[0][0].message, 'test-error');
           done();
         });
     });
   });
 
-  describe('show', function() {
-    var reply;
-    var request;
+  describe('show', () => {
+    let reply;
+    let request;
 
-    beforeEach(function() {
+    beforeEach(() => {
       reply = sinon.stub();
       request = {
         params: {
@@ -279,11 +276,11 @@ describe.skip('createRouteHandler', function() {
       };
     });
 
-    afterEach(function() {
+    afterEach(() => {
       assert(reply.calledOnce);
     });
 
-    it('should return a row from the mysql table given an id', function(done) {
+    it('should return a row from the mysql table given an id', (done) => {
       knexClient.table.returnsThis();
       knexClient.where.returnsThis();
       knexClient
@@ -292,7 +289,7 @@ describe.skip('createRouteHandler', function() {
 
       routeHandler
         .show(request, reply)
-        .then(function() {
+        .then(() => {
           assert(knexClient.table.calledOnce);
           assert(knexClient.where.calledOnce);
           assert(knexClient.first.calledOnce);
@@ -303,16 +300,14 @@ describe.skip('createRouteHandler', function() {
         });
     });
 
-    it('should return a 404 if given id is not found', function(done) {
+    it('should return a 404 if given id is not found', (done) => {
       knexClient.table.returnsThis();
       knexClient.where.returnsThis();
-      knexClient
-        .first
-        .returns(Bluebird.resolve({}));
+      knexClient.first.returns(Bluebird.resolve({}));
 
       routeHandler
         .show(request, reply)
-        .then(function() {
+        .then(() => {
           assert(knexClient.table.calledOnce);
           assert(knexClient.where.calledOnce);
           assert(knexClient.first.calledOnce);
@@ -323,14 +318,14 @@ describe.skip('createRouteHandler', function() {
         });
     });
 
-    it('should catch error', function(done) {
+    it('should catch error', (done) => {
       knexClient.table.returnsThis();
       knexClient.where.returnsThis();
       knexClient.first.returns(Bluebird.reject(new Error('test-error')));
 
       routeHandler
         .show(request, reply)
-        .then(function() {
+        .then(() => {
           assert.equal(reply.args[0][0].message, 'test-error');
           done();
         });
