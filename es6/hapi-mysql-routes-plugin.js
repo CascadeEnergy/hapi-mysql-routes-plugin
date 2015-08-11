@@ -4,8 +4,10 @@ import createRouteHandler from './lib/createRouteHandler';
 import knex from 'knex';
 import listValidationSchema from './lib/validationSchema/listValidationSchema';
 import pkg from '../package.json';
+import validatePluginOptions from './lib/validatePluginOptions';
 
 function register(server, options, next) {
+  validatePluginOptions(options);
 
   const knexClient = knex({
     client: 'mysql',
@@ -17,17 +19,15 @@ function register(server, options, next) {
     }
   });
 
-  let routeHandler = createRouteHandler(options, knexClient);
+  let routeHandler = createRouteHandler(
+    knexClient,
+    options.tableName,
+    options.tableIndex,
+    options.keyInTransformFn,
+    options.keyOutTransformFn
+  );
 
   server.route([
-    {
-      method: 'GET',
-      path: '/healthcheck',
-      handler: routeHandler.healthcheck,
-      config: {
-        tags: options.tags
-      }
-    },
     {
       method: 'GET',
       path: '/',

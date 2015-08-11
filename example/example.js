@@ -1,12 +1,14 @@
 'use strict';
 
 import config from 'config';
-import {Server} from 'hapi';
+import camelCase from 'lodash/string/camelCase';
 import good from 'good';
 import goodConsole from 'good-console';
-import hapiRoutes from '../es6/hapi-mysql-routes-plugin';
+import hapiMysqlRoutes from '../es6/hapi-mysql-routes-plugin';
 import Joi from 'joi';
 import pkg from './package.json';
+import {Server} from 'hapi';
+import snakeCase from 'lodash/string/snakeCase';
 
 const port = 9000;
 const server = new Server();
@@ -14,10 +16,6 @@ const server = new Server();
 server.connection({ port: port, labels: ['api'] });
 
 const api = server.select('api');
-
-let listQueryValidationSchema = {
-  name: Joi.string().optional()
-};
 
 api.register(
   [
@@ -38,16 +36,18 @@ api.register(
       }
     },
     {
-      register: hapiRoutes,
+      register: hapiMysqlRoutes,
       options: {
-        version: pkg.version,
+        keyInTransformFn: snakeCase,
+        keyOutTransformFn: camelCase,
+        mysqlConfig: config.mysql,
         tags: ['api'],
-        mysqlConfig: config.mysql, //required
-        tableName: 'unique_object', //required
-        index: 'uid', //required
-        tableHeaderFormat: 'snakeCase', //required - another value - camelCase
-        validateListQuerySchema: listQueryValidationSchema //optional - this
-        //has to be a joi validation object
+        tableIndex: 'uid',
+        tableName: 'unique_object',
+        validateListQuerySchema: {
+          domainId: Joi.number().optional()
+        }, //optional - this has to be a joi validation object
+        version: pkg.version
       }
     }
   ],

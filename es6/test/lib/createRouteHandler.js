@@ -6,7 +6,7 @@ var assert = require('assert');
 var Bluebird = require('bluebird');
 var sinon = require('sinon');
 
-describe('createRouteHandler', function() {
+describe.skip('createRouteHandler', function() {
   var routeHandler;
   var knexClient;
   var options;

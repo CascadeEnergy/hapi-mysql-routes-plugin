@@ -2,37 +2,35 @@
 // jshint -W040
 
 import Boom from 'boom';
-import camelCase from 'lodash/string/camelCase';
 import first from 'lodash/array/first';
 import forEach from 'lodash/collection/forEach';
 import isEmpty from 'lodash/lang/isEmpty';
 import mapKeys from 'lodash/object/mapKeys';
 import omit from 'lodash/object/omit';
 import rearg from 'lodash/function/rearg';
-import snakeCase from 'lodash/string/snakeCase';
 
-function apiController(options, knexClient) {
+function apiController(
+  knexClient,
+  tableName,
+  tableIndex,
+  requestTransformFunction = value => value,
+  responseTransformFunction = value => value
+) {
   return {
 
     create(request, reply) {
-      var resource;
-
-      if (options.tableHeaderFormat === 'snakeCase') {
-        var snakeCaseKeys = rearg(snakeCase, [1, 0]);
-        resource = mapKeys(request.payload, snakeCaseKeys);
-      } else {
-        resource = request.payload;
-      }
+      const transformKeys = rearg(requestTransformFunction, [1, 0]);
+      const payload = mapKeys(request.payload, transformKeys);
 
       function createApiResponse(response) {
-        let apiResponse = { };
-        apiResponse[camelCase(options.index)] = first(response);
-        return apiResponse;
+        return {
+          [responseTransformFunction(tableIndex)]: first(response)
+        };
       }
 
       return knexClient
-        .table(options.tableName)
-        .insert(resource)
+        .table(tableName)
+        .insert(payload)
         .then(createApiResponse)
         .then(reply)
         .catch(reply);
@@ -48,39 +46,29 @@ function apiController(options, knexClient) {
       }
 
       return knexClient
-        .table(options.tableName)
-        .where(options.index, request.params.id)
+        .table(tableName)
+        .where(tableIndex, request.params.id)
         .del()
         .then(createDeleteResponse)
         .catch(reply);
     },
 
-    healthcheck(request, reply) {
-      reply({ status: 'ok', version: options.version });
-    },
-
     list(request, reply) {
       function filterQuery() {
         function constructWhere(value, key) {
-          if (options.tableHeaderFormat === 'snakeCase') {
-            this.where(snakeCase(key), value);
-          } else {
-            this.where(key, value);
-          }
+          this.where(requestTransformFunction(key), value);
         }
 
         forEach(omit(request.query, ['cursor', 'limit']), constructWhere, this);
       }
 
       function prepareResponse(result) {
-        var camelCaseKeys = rearg(camelCase, [1, 0]);
-        return mapKeys(result, camelCaseKeys);
+        const transformKeys = rearg(responseTransformFunction, [1, 0]);
+        return mapKeys(result, transformKeys);
       }
 
       function createApiResponse(result) {
-        console.log(result.length);
-
-        var apiResponse = {
+        let apiResponse = {
           limit: null,
           cursor: null,
           records: result
@@ -101,7 +89,7 @@ function apiController(options, knexClient) {
       }
 
       return knexClient
-        .table(options.tableName)
+        .table(tableName)
         .where(filterQuery)
         .limit(request.query.limit)
         .offset((request.query.cursor - 1) * request.query.limit)
@@ -112,21 +100,19 @@ function apiController(options, knexClient) {
 
     show(request, reply) {
       function createApiResponse(result) {
-        var camelCaseKeys;
-
         if (isEmpty(result)) {
-          reply(Boom.notFound('Row not found in ' + options.tableName));
+          reply(Boom.notFound('Row not found in ' + tableName));
           return;
         }
 
-        camelCaseKeys = rearg(camelCase, [1, 0]);
+        const transformKeys = rearg(responseTransformFunction, [1, 0]);
 
-        reply(mapKeys(result, camelCaseKeys));
+        reply(mapKeys(result, transformKeys));
       }
 
       return knexClient
-        .table(options.tableName)
-        .where(options.index, request.params.id)
+        .table(tableName)
+        .where(tableIndex, request.params.id)
         .first()
         .then(createApiResponse)
         .catch(reply);
