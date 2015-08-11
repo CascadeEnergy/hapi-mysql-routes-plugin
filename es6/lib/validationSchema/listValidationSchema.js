@@ -3,8 +3,8 @@
 import Joi from 'joi';
 import extend from 'lodash/object/extend';
 
-function listValidationSchema(options) {
-  var schema = {
+function listValidationSchema(listQuerySchema) {
+  let defaultSchema = {
     limit: Joi
       .number()
       .integer()
@@ -18,12 +18,12 @@ function listValidationSchema(options) {
       .optional()
   };
 
-  if (options.validateListQuerySchema) {
-    extend(schema, options.validateListQuerySchema);
-    return Joi.object(schema);
+  if (listQuerySchema !== undefined) {
+    extend(defaultSchema, listQuerySchema);
+    return Joi.object(defaultSchema);
   }
 
-  return Joi.object(schema).unknown(true);
+  return Joi.object(defaultSchema).unknown(true);
 }
 
 export default listValidationSchema;

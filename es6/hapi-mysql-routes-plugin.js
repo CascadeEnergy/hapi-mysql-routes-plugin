@@ -6,12 +6,14 @@ import listValidationSchema from './lib/validationSchema/listValidationSchema';
 import pkg from '../package.json';
 import validatePluginOptions from './lib/validatePluginOptions';
 
+const requiredOptions = [ 'mysqlConfig', 'tableName', 'tableIndex' ];
+
 function register(server, options, next) {
-  validatePluginOptions(options);
+  validatePluginOptions(options, requiredOptions);
 
   const knexClient = knex({
     client: 'mysql',
-    connection: options.mysqlConfig,
+    connection: options.hapiMysqlRoutesOptions.mysqlConfig,
     debug: 'enabled',
     pool: {
       min: 0,
@@ -21,10 +23,10 @@ function register(server, options, next) {
 
   let routeHandler = createRouteHandler(
     knexClient,
-    options.tableName,
-    options.tableIndex,
-    options.requestTransformation,
-    options.responseTransformation
+    options.hapiMysqlRoutesOptions.tableName,
+    options.hapiMysqlRoutesOptions.tableIndex,
+    options.hapiMysqlRoutesOptions.requestTransformation,
+    options.hapiMysqlRoutesOptions.responseTransformation
   );
 
   server.route([
@@ -35,7 +37,9 @@ function register(server, options, next) {
       config: {
         tags: options.tags,
         validate: {
-          query: listValidationSchema(options)
+          query: listValidationSchema(
+            options.hapiMysqlRoutesOptions.validateListQuerySchema
+          )
         }
       }
     },

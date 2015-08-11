@@ -38,15 +38,17 @@ api.register(
     {
       register: hapiMysqlRoutes,
       options: {
-        mysqlConfig: config.mysql,
-        requestTransformation: snakeCase,
-        responseTransformation: camelCase,
+        hapiMysqlRoutesOptions: {
+          mysqlConfig: config.mysql,
+          requestTransformation: snakeCase,
+          responseTransformation: camelCase,
+          tableIndex: 'uid',
+          tableName: 'unique_object',
+          validateListQuerySchema: {
+            domainId: Joi.number().optional()
+          }
+        },
         tags: ['api'],
-        tableIndex: 'uid',
-        tableName: 'unique_object',
-        validateListQuerySchema: {
-          domainId: Joi.number().optional()
-        }, //optional - this has to be a joi validation object
         version: pkg.version
       }
     }
@@ -58,6 +60,6 @@ api.register(
   }
 );
 
-server.start(function () {
+server.start(function() {
   server.log('info', 'Example service running at: ' + server.info.uri);
 });

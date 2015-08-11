@@ -1,11 +1,14 @@
 'use strict';
 
-const requiredOptions = [ 'mysqlConfig', 'tableName', 'tableIndex' ];
+function validatePluginOptions(options, requiredOptions) {
+  const pluginOptions = options.hapiMysqlRoutesOptions;
 
-function validatePluginOptions(options) {
+  if (pluginOptions === undefined) {
+    throw new Error(`hapiMysqlRoutesOptions is a required plugin option`);
+  }
 
   function validate(value) {
-    if (options[value] === undefined) {
+    if (pluginOptions[value] === undefined) {
       throw new Error(`${value} is a required plugin option`);
     }
   }
