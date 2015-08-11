@@ -13,7 +13,7 @@ function register(server, options, next) {
 
   const knexClient = knex({
     client: 'mysql',
-    connection: options.hapiMysqlRoutesOptions.mysqlConfig,
+    connection: options.mysqlConfig,
     debug: 'enabled',
     pool: {
       min: 0,
@@ -23,10 +23,10 @@ function register(server, options, next) {
 
   let routeHandler = createRouteHandler(
     knexClient,
-    options.hapiMysqlRoutesOptions.tableName,
-    options.hapiMysqlRoutesOptions.tableIndex,
-    options.hapiMysqlRoutesOptions.requestTransformation,
-    options.hapiMysqlRoutesOptions.responseTransformation
+    options.tableName,
+    options.tableIndex,
+    options.requestTransformation,
+    options.responseTransformation
   );
 
   server.route([
@@ -38,7 +38,7 @@ function register(server, options, next) {
         tags: options.tags,
         validate: {
           query: listValidationSchema(
-            options.hapiMysqlRoutesOptions.validateListQuerySchema
+            options.validateListQuerySchema
           )
         }
       }

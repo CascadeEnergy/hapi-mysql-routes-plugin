@@ -38,15 +38,13 @@ api.register(
     {
       register: hapiMysqlRoutes,
       options: {
-        hapiMysqlRoutesOptions: {
-          mysqlConfig: config.mysql,
-          requestTransformation: snakeCase,
-          responseTransformation: camelCase,
-          tableIndex: 'uid',
-          tableName: 'unique_object',
-          validateListQuerySchema: {
-            domainId: Joi.number().optional()
-          }
+        mysqlConfig: config.mysql,
+        requestTransformation: snakeCase,
+        responseTransformation: camelCase,
+        tableIndex: 'uid',
+        tableName: 'unique_object',
+        validateListQuerySchema: {
+          domainId: Joi.number().optional()
         },
         tags: ['api'],
         version: pkg.version
