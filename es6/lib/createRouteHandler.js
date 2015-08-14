@@ -61,13 +61,15 @@ function apiController(
         query = request.query;
       }
 
+      query = requestTransformFunction(query);
+
       function filterQuery() {
         function constructWhere(value, key) {
           this.where(key, value);
         }
 
         forEach(
-          omit(requestTransformFunction(query),  ['cursor', 'limit']),
+          omit(query, ['cursor', 'limit']),
           constructWhere,
           this
         );

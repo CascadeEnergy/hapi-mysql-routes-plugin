@@ -6,11 +6,11 @@ import assert from 'assert';
 import Bluebird from 'bluebird';
 import sinon from 'sinon';
 
-describe.skip('createRouteHandler', () => {
+describe('createRouteHandler', () => {
   const tableName = 'test-tableName';
   const tableIndex = 'test-tableIndex';
-  const requestTransform = sinon.stub();
-  const responseTransform = sinon.stub();
+  let requestTransform = sinon.stub();
+  let responseTransform = sinon.stub();
   let routeHandler;
   let knexClient;
 
@@ -53,6 +53,11 @@ describe.skip('createRouteHandler', () => {
           domainId: 100
         }
       };
+      requestTransform.returns({
+        name: 'test-name',
+        domainId: 100
+      });
+      responseTransform.returns({ id: 100 });
     });
 
     afterEach(() => {
@@ -177,6 +182,18 @@ describe.skip('createRouteHandler', () => {
         cursor: 100,
         records: [ { name: 'test-name', id: 100 } ]
       };
+      requestTransform.returns({
+        name: 'test-name',
+        id: 100,
+        cursor: 0,
+        limit: 10
+      });
+      responseTransform.onFirstCall().returns(Bluebird.resolve({
+        name: 'test-name'
+      }));
+      responseTransform.onSecondCall().returns(Bluebird.resolve({
+        id: 100
+      }));
     });
 
     afterEach(() => {
@@ -211,6 +228,7 @@ describe.skip('createRouteHandler', () => {
 
             filterQuery = knexClient.where.args[0][0];
             filterQuery.bind(context)();
+
             assert(context.where.calledTwice);
             assert(context.where.args[0], [ 'name', 'test-name' ]);
             assert(context.where.args[1], [ 'id', 100 ]);
@@ -232,6 +250,8 @@ describe.skip('createRouteHandler', () => {
         knexClient.limit.returnsThis();
         knexClient.offset.returnsThis();
         knexClient.map.returns(Bluebird.resolve({}));
+
+        responseTransform.returns(Bluebird.resolve({}));
 
         routeHandler
           .list(request, reply)
@@ -286,6 +306,7 @@ describe.skip('createRouteHandler', () => {
       knexClient
         .first
         .returns(Bluebird.resolve({ name: 'test-name' }));
+      responseTransform.returns({ name: 'test-name' });
 
       routeHandler
         .show(request, reply)
