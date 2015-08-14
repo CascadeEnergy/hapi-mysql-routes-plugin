@@ -68,7 +68,18 @@ api.register(
           config: {
             validate: {
               query: {
-                domainId: Joi.number()
+                domainId: Joi.number(),
+                limit: Joi
+                  .number()
+                  .integer()
+                  .min(1)
+                  .default(2)
+                  .optional(),
+                cursor: Joi
+                  .number()
+                  .min(1)
+                  .default(1)
+                  .optional()
               }
             }
           }

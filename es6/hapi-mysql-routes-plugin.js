@@ -3,7 +3,6 @@
 import createRouteHandler from './lib/createRouteHandler';
 import get from 'lodash/object/get';
 import knex from 'knex';
-import listRouteConfig from './lib/listRouteConfig';
 import pkg from '../package.json';
 import validatePluginOptions from './lib/validatePluginOptions';
 
@@ -36,7 +35,7 @@ function register(server, options, next) {
       method: 'GET',
       path: '/',
       handler: routeHandler.list,
-      config: listRouteConfig(get(options.list, 'config'))
+      config: get(options.list, 'config')
     },
     {
       method: 'GET',

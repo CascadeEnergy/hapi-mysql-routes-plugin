@@ -61,6 +61,14 @@ function apiController(
         query = request.query;
       }
 
+      if(isUndefined(get(query, 'limit'))) {
+        query.limit = 500;
+      }
+
+      if(isUndefined(get(query, 'cursor'))) {
+        query.cursor = 1;
+      }
+
       query = requestTransformFunction(query);
 
       function filterQuery() {
