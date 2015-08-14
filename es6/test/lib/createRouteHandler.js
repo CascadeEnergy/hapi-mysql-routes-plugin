@@ -6,7 +6,7 @@ import assert from 'assert';
 import Bluebird from 'bluebird';
 import sinon from 'sinon';
 
-describe('createRouteHandler', () => {
+describe.skip('createRouteHandler', () => {
   const tableName = 'test-tableName';
   const tableIndex = 'test-tableIndex';
   const requestTransform = sinon.stub();

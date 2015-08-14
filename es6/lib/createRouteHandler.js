@@ -4,10 +4,10 @@
 import Boom from 'boom';
 import first from 'lodash/array/first';
 import forEach from 'lodash/collection/forEach';
+import get from 'lodash/object/get';
 import isEmpty from 'lodash/lang/isEmpty';
-import mapKeys from 'lodash/object/mapKeys';
+import isUndefined from 'lodash/lang/isUndefined';
 import omit from 'lodash/object/omit';
-import rearg from 'lodash/function/rearg';
 
 function apiController(
   knexClient,
@@ -19,18 +19,19 @@ function apiController(
   return {
 
     create(request, reply) {
-      const transformKeys = rearg(requestTransformFunction, [1, 0]);
-      const payload = mapKeys(request.payload, transformKeys);
+      let payload = get(request.pre, 'payload');
+
+      if(isUndefined(payload)) {
+        payload = request.payload;
+      }
 
       function createApiResponse(response) {
-        return {
-          [responseTransformFunction(tableIndex)]: first(response)
-        };
+        return responseTransformFunction({ [tableIndex]: first(response) });
       }
 
       return knexClient
         .table(tableName)
-        .insert(payload)
+        .insert(requestTransformFunction(payload))
         .then(createApiResponse)
         .then(reply)
         .catch(reply);
@@ -54,17 +55,26 @@ function apiController(
     },
 
     list(request, reply) {
+      let query = get(request.pre, 'query');
+
+      if(isUndefined(query)) {
+        query = request.query;
+      }
+
       function filterQuery() {
         function constructWhere(value, key) {
-          this.where(requestTransformFunction(key), value);
+          this.where(key, value);
         }
 
-        forEach(omit(request.query, ['cursor', 'limit']), constructWhere, this);
+        forEach(
+          omit(requestTransformFunction(query),  ['cursor', 'limit']),
+          constructWhere,
+          this
+        );
       }
 
       function prepareResponse(result) {
-        const transformKeys = rearg(responseTransformFunction, [1, 0]);
-        return mapKeys(result, transformKeys);
+        return responseTransformFunction(result);
       }
 
       function createApiResponse(result) {
@@ -79,10 +89,10 @@ function apiController(
           return;
         }
 
-        apiResponse.limit = request.query.limit;
+        apiResponse.limit = query.limit;
 
-        if (result.length === request.query.limit) {
-          apiResponse.cursor = request.query.cursor + 1;
+        if (result.length === query.limit) {
+          apiResponse.cursor = query.cursor + 1;
         }
 
         reply(apiResponse);
@@ -99,15 +109,14 @@ function apiController(
     },
 
     show(request, reply) {
+
       function createApiResponse(result) {
         if (isEmpty(result)) {
           reply(Boom.notFound('Row not found in ' + tableName));
           return;
         }
 
-        const transformKeys = rearg(responseTransformFunction, [1, 0]);
-
-        reply(mapKeys(result, transformKeys));
+        reply(responseTransformFunction(result));
       }
 
       return knexClient

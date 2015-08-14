@@ -1,8 +1,9 @@
 'use strict';
 
 import createRouteHandler from './lib/createRouteHandler';
+import get from 'lodash/object/get';
 import knex from 'knex';
-import listValidationSchema from './lib/validationSchema/listValidationSchema';
+import listRouteConfig from './lib/listRouteConfig';
 import pkg from '../package.json';
 import validatePluginOptions from './lib/validatePluginOptions';
 
@@ -34,35 +35,25 @@ function register(server, options, next) {
       method: 'GET',
       path: '/',
       handler: routeHandler.list,
-      config: {
-        tags: options.tags,
-        validate: {
-          query: listValidationSchema(
-            options.validateListQuerySchema
-          )
-        }
-      }
+      config: listRouteConfig(get(options.list, 'config'))
     },
     {
       method: 'GET',
       path: '/{id}',
       handler: routeHandler.show,
-      config: {
-        tags: options.tags
-      }
+      config: get(options.show, 'config')
     },
     {
       method: 'POST',
       path: '/',
       handler: routeHandler.create,
-      config: {
-        tags: options.tags
-      }
+      config: get(options.create, 'config')
     },
     {
       method: 'DELETE',
       path: '/{id}',
-      handler: routeHandler.destroy
+      handler: routeHandler.destroy,
+      config: get(options.destroy, 'config')
     }
   ]);
 

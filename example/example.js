@@ -1,4 +1,5 @@
 'use strict';
+//jshint camelcase: false
 
 import config from 'config';
 import camelCase from 'lodash/string/camelCase';
@@ -6,7 +7,8 @@ import good from 'good';
 import goodConsole from 'good-console';
 import hapiMysqlRoutes from '../es6/hapi-mysql-routes-plugin';
 import Joi from 'joi';
-import pkg from './package.json';
+import mapKeys from 'lodash/object/mapKeys';
+import rearg from 'lodash/function/rearg';
 import {Server} from 'hapi';
 import snakeCase from 'lodash/string/snakeCase';
 
@@ -16,6 +18,16 @@ const server = new Server();
 server.connection({ port: port, labels: ['api'] });
 
 const api = server.select('api');
+
+function formatRequest(result) {
+  const transformKeys = rearg(snakeCase, [1, 0]);
+  return mapKeys(result, transformKeys);
+}
+
+function formatResponse(result) {
+  const transformKeys = rearg(camelCase, [1, 0]);
+  return mapKeys(result, transformKeys);
+}
 
 api.register(
   [
@@ -39,15 +51,47 @@ api.register(
       register: hapiMysqlRoutes,
       options: {
         mysqlConfig: config.mysql,
-        requestTransformation: snakeCase,
-        responseTransformation: camelCase,
         tableIndex: 'uid',
         tableName: 'unique_object',
-        validateListQuerySchema: {
-          domainId: Joi.number().optional()
+        requestTransformation: formatRequest,
+        responseTransformation: formatResponse,
+        show: {
+          config: {
+            validate: {
+              params: {
+                id: Joi.number().integer()
+              }
+            }
+          }
         },
-        tags: ['api'],
-        version: pkg.version
+        list: {
+          config: {
+            //pre: [{ method: preFormatQuery, assign: 'query' }],
+            validate: {
+              query: {
+                domainId: Joi.number()
+              }
+            }
+          }
+        },
+        create: {
+          config: {
+            //pre: [{ method: preFormatPayload, assign: 'payload' }],
+            validate: {
+              payload: Joi.object().keys({
+                name: Joi.string().required(),
+                caption: Joi.string().optional(),
+                domainId: Joi.number().required(),
+                createdBy: Joi.number().required()
+              })
+            }
+          }
+        },
+        destroy: {
+          config: {
+
+          }
+        }
       }
     }
   ],
