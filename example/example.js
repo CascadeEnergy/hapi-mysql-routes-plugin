@@ -51,8 +51,8 @@ api.register(
       register: hapiMysqlRoutes,
       options: {
         mysqlConfig: config.mysql,
-        tableIndex: 'uid',
-        tableName: 'unique_object',
+        tableIndex: config.tableIndex,
+        tableName: config.tableName,
         requestTransformation: formatRequest,
         responseTransformation: formatResponse,
         show: {

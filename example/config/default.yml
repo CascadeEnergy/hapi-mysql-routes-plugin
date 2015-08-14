@@ -4,3 +4,7 @@ mysql:
  user:
  password:
  port:
+
+tableName:
+
+tableIndex:
