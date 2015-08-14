@@ -80,6 +80,32 @@ describe('createRouteHandler', () => {
         });
     });
 
+    it('should use custom request payload, if request.pre.customRequest ' +
+      'has been defined', (done) => {
+      request = {
+        pre: {
+          customRequest: {
+            name: 'test-custom-name',
+            domainId: 100
+          }
+        }
+      };
+
+      knexClient.table.returnsThis();
+      knexClient.insert.returns(Bluebird.resolve([{ id: 100 }]));
+
+      routeHandler
+        .create(request, reply)
+        .then(() => {
+          assert(knexClient.table.calledOnce);
+          assert(knexClient.insert.calledOnce);
+
+          assert(reply.args[0][0], { id: 100 });
+
+          done();
+        });
+    });
+
     it('should catch error', (done) => {
       knexClient.table.returnsThis();
       knexClient.insert.returns(Bluebird.reject(new Error('test-error')));
@@ -234,7 +260,57 @@ describe('createRouteHandler', () => {
             assert(context.where.args[1], [ 'id', 100 ]);
 
             prepareResponse = knexClient.map.args[0][0];
-            assert( prepareResponse({ id: 100 }), { id: 100 });
+            assert(prepareResponse({ id: 100 }), { id: 100 });
+
+            assert(reply.args[0][0], response);
+
+            done();
+          });
+    });
+
+    it('should use the custom request object if defined in request.pre',
+      (done) => {
+        const context = { where: sinon.spy() };
+        let prepareResponse;
+
+        request = {
+          pre: {
+            customRequest: {
+              name: 'test-custom-name',
+              cursor: 0,
+              limit: 10
+            }
+          }
+        };
+
+        knexClient.table.returnsThis();
+        knexClient.where.returnsThis();
+        knexClient.limit.returnsThis();
+        knexClient.offset.returnsThis();
+        knexClient
+          .map
+          .returns(Bluebird.resolve([{
+            name: 'test-custom-name'
+          }]));
+
+        routeHandler
+          .list(request, reply)
+          .then(() => {
+            let filterQuery;
+
+            assert(knexClient.table.calledOnce);
+            assert(knexClient.where.calledOnce);
+            assert(knexClient.limit.calledOnce);
+            assert(knexClient.offset.calledOnce);
+
+            filterQuery = knexClient.where.args[0][0];
+            filterQuery.bind(context)();
+
+            assert(context.where.calledTwice);
+            assert(context.where.args[0], [ 'name', 'test-custom-name' ]);
+
+            prepareResponse = knexClient.map.args[0][0];
+            assert(prepareResponse({ id: 100 }), { id: 100 });
 
             assert(reply.args[0][0], response);
 
@@ -265,7 +341,7 @@ describe('createRouteHandler', () => {
 
             done();
           });
-      });
+    });
 
     it('should catch error', (done) => {
       knexClient.table.returnsThis();

@@ -103,8 +103,8 @@ function apiController(
       return knexClient
         .table(tableName)
         .where(filterQuery)
-        .limit(request.query.limit)
-        .offset((request.query.cursor - 1) * request.query.limit)
+        .limit(query.limit)
+        .offset((query.cursor - 1) * query.limit)
         .map(prepareResponse)
         .then(createApiResponse)
         .catch(reply);
