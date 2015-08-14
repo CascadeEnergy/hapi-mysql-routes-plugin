@@ -66,7 +66,6 @@ api.register(
         },
         list: {
           config: {
-            //pre: [{ method: preFormatQuery, assign: 'query' }],
             validate: {
               query: {
                 domainId: Joi.number()
@@ -76,7 +75,6 @@ api.register(
         },
         create: {
           config: {
-            //pre: [{ method: preFormatPayload, assign: 'payload' }],
             validate: {
               payload: Joi.object().keys({
                 name: Joi.string().required(),

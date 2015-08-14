@@ -7,10 +7,11 @@ import listRouteConfig from './lib/listRouteConfig';
 import pkg from '../package.json';
 import validatePluginOptions from './lib/validatePluginOptions';
 
-const requiredOptions = [ 'mysqlConfig', 'tableName', 'tableIndex' ];
-
 function register(server, options, next) {
-  validatePluginOptions(options, requiredOptions);
+  const validateOptions = validatePluginOptions(options);
+
+  validateOptions.validateAllOptions();
+  validateOptions.validateRequiredOptions();
 
   const knexClient = knex({
     client: 'mysql',

@@ -19,7 +19,7 @@ function apiController(
   return {
 
     create(request, reply) {
-      let payload = get(request.pre, 'payload');
+      let payload = get(request.pre, 'customRequest');
 
       if(isUndefined(payload)) {
         payload = request.payload;
@@ -55,7 +55,7 @@ function apiController(
     },
 
     list(request, reply) {
-      let query = get(request.pre, 'query');
+      let query = get(request.pre, 'customRequest');
 
       if(isUndefined(query)) {
         query = request.query;
