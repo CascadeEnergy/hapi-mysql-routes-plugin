@@ -103,7 +103,7 @@ Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
 
 Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
 
-For the list route, any number of query parameters can be sent. If `limit` and `cursor` are not set, then a default of `limit = 500` and `cursor = 1` is set. It is desirable to do validation on the query parameters. The validation can be a JOI schema or any custom validation function. Please refer for all the validation options Hapi Validation(http://hapijs.com/tutorials/validation)
+For the list route, any number of query parameters can be sent. If `limit` and `cursor` are not set, then a default of `limit = 500` and `cursor = 1` is set. It is desirable to do validation on the query parameters. The validation can be a JOI schema or any custom validation function. Please refer for all the validation options [Hapi Validation](http://hapijs.com/tutorials/validation)
 
 ```
 list: {
