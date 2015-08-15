@@ -1,7 +1,7 @@
 'use strict';
 
-import keys from 'lodash/object/keys';
 import includes from 'lodash/collection/includes';
+import keys from 'lodash/object/keys';
 
 function validatePluginOptions(options) {
   const requiredOptions = [ 'mysqlConfig', 'tableName', 'tableIndex' ];
@@ -14,28 +14,21 @@ function validatePluginOptions(options) {
     'destroy'
   ]);
 
-  return {
-    validateAllOptions() {
-      function validate(value) {
-        if (!includes(allowedOptions, value)) {
-          throw new Error(`${value} is not an allowed option`);
-        }
-      }
-
-      keys(options).forEach(validate);
-    },
-
-    validateRequiredOptions() {
-      function validate(value) {
-        if (options[value] === undefined) {
-          throw new Error(`${value} is a required plugin option`);
-        }
-      }
-
-      requiredOptions.forEach(validate);
+  function validateAllowedOptions(value) {
+    if (!includes(allowedOptions, value)) {
+      throw new Error(`${value} is not an allowed option`);
     }
-  };
+  }
 
+  function validateRequiredOptions(value) {
+    if (options[value] === undefined) {
+      throw new Error(`${value} is a required plugin option`);
+    }
+  }
+
+  requiredOptions.forEach(validateRequiredOptions);
+
+  keys(options).forEach(validateAllowedOptions);
 }
 
 export default validatePluginOptions;

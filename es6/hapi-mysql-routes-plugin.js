@@ -7,10 +7,7 @@ import pkg from '../package.json';
 import validatePluginOptions from './lib/validatePluginOptions';
 
 function register(server, options, next) {
-  const validateOptions = validatePluginOptions(options);
-
-  validateOptions.validateAllOptions();
-  validateOptions.validateRequiredOptions();
+  validatePluginOptions(options);
 
   const knexClient = knex({
     client: 'mysql',
