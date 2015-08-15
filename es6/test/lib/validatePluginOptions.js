@@ -45,7 +45,7 @@ describe('validatePluginOptions', function() {
       show: 'a'
     }]
   }, function(options) {
-    it('should not throw error if required options are not set', () => {
+    it('should not throw error if required options are set', () => {
       assert.doesNotThrow(
         function() {
           validationPluginOptions(options);
