@@ -83,7 +83,7 @@ function formatRequest(result) {
 ```
 **responseTransformation** `function` _optional_
 
-If this option is set, the function is applied to all the responses by the Route Handlers.
+If this option is set, the function is applied to all the api responses sent back by the Route Handlers.
 ```
 import mapKeys from 'lodash/object/mapKeys';
 import rearg from 'lodash/function/rearg';
@@ -97,16 +97,43 @@ function formatRequest(result) {
 
 **show** _optional_
 
-You can pass in the hapi config object for each route - [Route options](http://hapijs.com/api#route-options)
+Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
 
 **list** _optional_
 
-You can pass in the hapi config object for each route - [Route options](http://hapijs.com/api#route-options)
+Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
+
+For the list route, any number of query parameters can be sent. If `limit` and `cursor` are not set, then a default of `limit = 500` and `cursor = 1` is set. It is desirable to do validation on the query parameters. The validation can be a JOI schema or any custom validation function. Please refer for all the validation options Hapi Validation(http://hapijs.com/tutorials/validation)
+
+```
+list: {
+  config: {
+    validate: {
+      query: {
+        anyTableField: Joi.any(),
+        limit: Joi
+          .number()
+          .integer()
+          .min(1)
+          .default(2)
+          .optional(),
+        cursor: Joi
+          .number()
+          .min(1)
+          .default(1)
+          .optional()
+      }
+    }
+  }
+}
+```
 
 **create** _optional_
 
-You can pass in the hapi config object for each route - [Route options](http://hapijs.com/api#route-options)
+Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
 
 **destroy** _optional_
 
-You can pass in the hapi config object for each route - [Route options](http://hapijs.com/api#route-options)
+Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
+
+
