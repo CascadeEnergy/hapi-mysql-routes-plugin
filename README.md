@@ -28,8 +28,8 @@ api.register(
       register: hapiMysqlRoutes,
       options: {
         mysqlConfig: mysql,
-        tableIndex: tableIndex,
-        tableName: tableName,
+        primaryKey: 'user_id',
+        tableName: 'users',
       }
     }
   ],
@@ -64,7 +64,7 @@ host: {
 
 The name of the mysql table on which crud operations are to be performed.
 
-**tableIndex** `string` _required_
+**primaryKey** `string` _required_
 
 The primary key of the mysql table. This is constrained to be an auto-increment key.
 
