@@ -318,6 +318,33 @@ describe('createRouteHandler', () => {
           });
       });
 
+    it('should set a default cursor and limit if it is not passed in as a ' +
+    'query param',
+      (done) => {
+        request.query.limit = undefined;
+        request.query.cursor = undefined;
+
+        knexClient.table.returnsThis();
+        knexClient.where.returnsThis();
+        knexClient.limit.returnsThis();
+        knexClient.offset.returnsThis();
+        knexClient.map.returns(Bluebird.resolve({}));
+
+        responseTransform.returns(Bluebird.resolve({}));
+
+        routeHandler
+          .list(request, reply)
+          .then(() => {
+
+            assert(
+              reply.args[0][0],
+              { limit: null, cursor: null, records: {} }
+            );
+
+            done();
+          });
+      });
+
     it('should return an empty array when at the end of the paginated list' +
       ' of rows from the given mysql table',
       (done) => {
