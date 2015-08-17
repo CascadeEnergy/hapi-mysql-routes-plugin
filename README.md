@@ -66,7 +66,7 @@ The name of the mysql table on which crud operations are to be performed.
 
 **tableIndex** `string` _required_
 
-The primary key of the mysql table. This has to be an auto-increment key.
+The primary key of the mysql table. This is constrained to be an auto-increment key.
 
 **requestTransformation** `function` _optional_
 
@@ -99,11 +99,54 @@ function formatRequest(result) {
 
 Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
 
+The `id` of the resource being queried is passed in as the url parameter. Please refer for all the validation options -  [Hapi Validation](http://hapijs.com/tutorials/validation). The config object can be passed in for the show route as follows:
+
+```
+show: {
+  config: {
+    validate: {
+      params: {
+        id: Joi.number().integer()
+      }
+    }
+  }
+}
+```
+
 **list** _optional_
+
+_Sample Response_ 
+
+_success_
+Status code - 200
+JSON object:
+```
+{
+  limit: 500,
+  cursor: 1,
+  records: [
+    {
+      id: 100,
+      name: Resource Name
+    }
+  ]
+}
+```
+
+If no resources matching the query params are found, then the following response is returned:
+
+```
+{
+  limit: null,
+  cursor: null,
+  records: []
+}
+```
+
 
 Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
 
-For the list route, any number of query parameters can be sent. If `limit` and `cursor` are not set, then a default of `limit = 500` and `cursor = 1` is set. It is desirable to do validation on the query parameters. The validation can be a JOI schema or any custom validation function. Please refer for all the validation options -  [Hapi Validation](http://hapijs.com/tutorials/validation)
+For the list route, any number of query parameters can be sent. If `limit` and `cursor` are not set, then a default of `limit = 500` and `cursor = 1` is set. It is desirable to do validation on the query parameters. The validation can be a JOI schema or any custom validation function. Please refer for all the validation options -  [Hapi Validation](http://hapijs.com/tutorials/validation).
 
 ```
 list: {
@@ -132,9 +175,25 @@ list: {
 
 Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
 
+The create route takes in a JSON object as the payload. Returns a status code of 200 and the id of the newly created resource.  
+
 **destroy** _optional_
 
 Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
+
+The `id` of the resource to be deleted is passed in as the url parameter. Please refer for all the validation options -  [Hapi Validation](http://hapijs.com/tutorials/validation). The config object can be passed in for the destroy route as follows:
+
+```
+destroy: {
+  config: {
+    validate: {
+      params: {
+        id: Joi.number().integer()
+      }
+    }
+  }
+}
+```
 
 ##Customizing Requests
 
