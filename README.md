@@ -1,6 +1,10 @@
 # hapi-mysql-routes-plugin [![Build Status](https://travis-ci.org/CascadeEnergy/hapi-mysql-routes-plugin.svg)](https://travis-ci.org/CascadeEnergy/hapi-mysql-routes-plugin)
 
-> Hapi plugin to create routes for crud operations on a MySql resource
+> Hapi Mysql Routes Plugin registers basic http routes and turns them into RESTful API endpoints that interact with a Mysql resource. The routes are:
+ - `GET` to `/{id}`
+ - `GET` to `/`
+ - `POST` to `/`
+ - `DELETE` to `/{id}`
 
 
 ## Install
@@ -28,7 +32,7 @@ api.register(
       register: hapiMysqlRoutes,
       options: {
         mysqlConfig: mysql,
-        primaryKey: 'user_id',
+        primaryKey: 'id',
         tableName: 'users',
       }
     }
@@ -44,6 +48,47 @@ server.start(function() {
   server.log('info', 'Server running at: ' + server.info.uri);
 });
 ```
+
+## Routes
+
+##### `GET /`
+This is the list route. You can pass in a number of query parameters that applies to your Mysql resource. The results are paginated. You can send `limit` and `cursor` along with the rest of the query parameters. If `limit` and `cursor` are not set, then a default of `limit = 500` and `cursor = 1` is set.
+
+Returns `HTTP 200 OK` with JSON
+```
+{
+  limit: 500,
+  cursor: 1,
+  records: [
+    {
+      id: 100,
+      name: 'Foo Bar',
+      email: 'foobar@example.com'
+    }
+  ]
+}
+```
+In the above example if there are no users in in the `users` table, it `HTTP 200 OK` with JSON:
+
+```
+{
+  limit: null,
+  cursor: null,
+  records: []
+}
+```
+
+##### `GET /{id}`
+
+Returns a response of `HTTP 200 OK` with the row that matches the `id`. Responds with `HTTP 404 Not Found` if a matching row cannot be found.
+
+##### `POST /` with payload
+
+Returns a response of `HTTP 200 OK` with the `id` of the newly created row. 
+
+##### `DELETE /{id}`
+
+Returns a response of `HTTP 204 No Content` and removes the row matching the id from the table.
 
 ## Options
 
@@ -95,11 +140,9 @@ function formatRequest(result) {
 }
 ```
 
-**show** _optional_
+**show** _optional_ - This option corresponds to the `GET /{id}` route.
 
-Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
-
-The `id` of the resource being queried is passed in as the url parameter. Please refer for all the validation options -  [Hapi Validation](http://hapijs.com/tutorials/validation). The config object can be passed in for the show route as follows:
+The [Hapi config object](http://hapijs.com/api#route-options) can be passed in as follows:
 
 ```
 show: {
@@ -113,48 +156,17 @@ show: {
 }
 ```
 
-**list** _optional_
+**list** _optional_ - This option corresponds to the `GET /` route.
 
-_Sample Response_ 
-
-_success_
-
-200 JSON object:
-
-```
-{
-  limit: 500,
-  cursor: 1,
-  records: [
-    {
-      id: 100,
-      name: Resource Name
-    }
-  ]
-}
-```
-
-If no resources matching the query params are found, then the following response is returned:
-
-```
-{
-  limit: null,
-  cursor: null,
-  records: []
-}
-```
-
-
-Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
-
-For the list route, any number of query parameters can be sent. If `limit` and `cursor` are not set, then a default of `limit = 500` and `cursor = 1` is set. It is desirable to do validation on the query parameters. The validation can be a JOI schema or any custom validation function. Please refer for all the validation options -  [Hapi Validation](http://hapijs.com/tutorials/validation).
+The [Hapi config object](http://hapijs.com/api#route-options) can be passed in as follows:
 
 ```
 list: {
   config: {
     validate: {
       query: {
-        anyTableField: Joi.any(),
+        name: Joi.any(),
+        email: Joi.any(),
         limit: Joi
           .number()
           .integer()
@@ -172,17 +184,28 @@ list: {
 }
 ```
 
-**create** _optional_
+**create** _optional_ - This option corresponds to the `POST /` route with a payload.
 
-Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
+The [Hapi config object](http://hapijs.com/api#route-options) can be passed in as follows:
 
-The create route takes in a JSON object as the payload. Returns a status code of 200 and the id of the newly created resource.  
+```
+create: {
+  config: {
+    validate: {
+      params: {
+        name: Joi.string(),
+        email: Joi.string().email()
+      }
+    }
+  }
+}
+```
 
-**destroy** _optional_
+The payload is a JSON object.
 
-Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
+**destroy** _optional_ - This option corresponds to the `DELETE /{id}`.
 
-The `id` of the resource to be deleted is passed in as the url parameter. Please refer for all the validation options -  [Hapi Validation](http://hapijs.com/tutorials/validation). The config object can be passed in for the destroy route as follows:
+The [Hapi config object](http://hapijs.com/api#route-options) can be passed in as follows:
 
 ```
 destroy: {
@@ -199,7 +222,3 @@ destroy: {
 ##Customizing Requests
 
 Custom requests can be sent by using the route prerequiste feature of Hapi Routes. The custom request object has to be set to `request.pre.customRequest`. When set, the request object is replaced by the `request.pre` object.
-
-
-
-
