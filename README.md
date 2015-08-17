@@ -136,4 +136,10 @@ Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
 
 Hapi Config Object - [Route options](http://hapijs.com/api#route-options)
 
+##Customizing Requests
+
+Custom requests can be sent by using the route prerequiste feature of Hapi Routes. The custom request object has to be set to `request.pre.customRequest`. When set, the request object is replaced by the `request.pre` object.
+
+
+
 
