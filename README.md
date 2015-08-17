@@ -1,10 +1,10 @@
 # hapi-mysql-routes-plugin [![Build Status](https://travis-ci.org/CascadeEnergy/hapi-mysql-routes-plugin.svg)](https://travis-ci.org/CascadeEnergy/hapi-mysql-routes-plugin)
 
 > Hapi Mysql Routes Plugin registers basic http routes and turns them into RESTful API endpoints that interact with a Mysql resource. The routes are:
- - `GET` to `/{id}`
- - `GET` to `/`
- - `POST` to `/`
- - `DELETE` to `/{id}`
+ - `GET /{id}`
+ - `GET /` [query params]
+ - `POST /` [payload]
+ - `DELETE /{id}`
 
 
 ## Install
