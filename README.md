@@ -118,8 +118,9 @@ show: {
 _Sample Response_ 
 
 _success_
-Status code - 200
-JSON object:
+
+200 JSON object:
+
 ```
 {
   limit: 500,

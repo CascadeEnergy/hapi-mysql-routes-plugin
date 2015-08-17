@@ -22,7 +22,7 @@ function register(server, options, next) {
   let routeHandler = createRouteHandler(
     knexClient,
     options.tableName,
-    options.tableIndex,
+    options.primaryKey,
     options.requestTransformation,
     options.responseTransformation
   );

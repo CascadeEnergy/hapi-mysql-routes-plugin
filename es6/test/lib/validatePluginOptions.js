@@ -11,12 +11,12 @@ describe('validatePluginOptions', function() {
     'missing required option': [{
         mysqlConfigs: 'a',
         tableName: 'b',
-        tableIndex: 'c'
+        primaryKey: 'c'
       }],
     'option not in allowed list': [{
         mysqlConfig: 'a',
         tableName: 'b',
-        tableIndex: 'c',
+        primaryKey: 'c',
         test: 'a'
       }]
   }, function(options) {
@@ -36,12 +36,12 @@ describe('validatePluginOptions', function() {
     'all the required options set': [{
       mysqlConfig: 'a',
       tableName: 'b',
-      tableIndex: 'c'
+      primaryKey: 'c'
     }],
     'only options from the allowed list': [{
       mysqlConfig: 'a',
       tableName: 'b',
-      tableIndex: 'c',
+      primaryKey: 'c',
       show: 'a'
     }]
   }, function(options) {

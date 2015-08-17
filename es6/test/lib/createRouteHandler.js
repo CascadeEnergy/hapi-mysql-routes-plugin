@@ -8,7 +8,7 @@ import sinon from 'sinon';
 
 describe('createRouteHandler', () => {
   const tableName = 'test-tableName';
-  const tableIndex = 'test-tableIndex';
+  const primaryKey = 'test-tableIndex';
   let requestTransform = sinon.stub();
   let responseTransform = sinon.stub();
   let routeHandler;
@@ -35,7 +35,7 @@ describe('createRouteHandler', () => {
     routeHandler = createRouteHandler(
       knexClient,
       tableName,
-      tableIndex,
+      primaryKey,
       requestTransform,
       responseTransform
     );

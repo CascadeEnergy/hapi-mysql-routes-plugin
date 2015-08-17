@@ -9,10 +9,10 @@ import isEmpty from 'lodash/lang/isEmpty';
 import isUndefined from 'lodash/lang/isUndefined';
 import omit from 'lodash/object/omit';
 
-function apiController(
+function createRouteHandler(
   knexClient,
   tableName,
-  tableIndex,
+  primaryKey,
   requestTransformFunction = value => value,
   responseTransformFunction = value => value
 ) {
@@ -26,7 +26,7 @@ function apiController(
       }
 
       function createApiResponse(response) {
-        return responseTransformFunction({ [tableIndex]: first(response) });
+        return responseTransformFunction({ [primaryKey]: first(response) });
       }
 
       return knexClient
@@ -48,7 +48,7 @@ function apiController(
 
       return knexClient
         .table(tableName)
-        .where(tableIndex, request.params.id)
+        .where(primaryKey, request.params.id)
         .del()
         .then(createDeleteResponse)
         .catch(reply);
@@ -61,26 +61,24 @@ function apiController(
         query = request.query;
       }
 
-      if(isUndefined(get(query, 'limit'))) {
+      if(isUndefined(query.limit)) {
         query.limit = 500;
       }
 
-      if(isUndefined(get(query, 'cursor'))) {
+      if(isUndefined(query.cursor)) {
         query.cursor = 1;
       }
 
       query = requestTransformFunction(query);
 
       function filterQuery() {
+        let searchParams = omit(query, ['cursor', 'limit']);
+
         function constructWhere(value, key) {
           this.where(key, value);
         }
 
-        forEach(
-          omit(query, ['cursor', 'limit']),
-          constructWhere,
-          this
-        );
+        forEach(searchParams, constructWhere, this);
       }
 
       function prepareResponse(result) {
@@ -95,8 +93,7 @@ function apiController(
         };
 
         if (isEmpty(result)) {
-          reply(apiResponse);
-          return;
+          return apiResponse;
         }
 
         apiResponse.limit = query.limit;
@@ -105,7 +102,7 @@ function apiController(
           apiResponse.cursor = query.cursor + 1;
         }
 
-        reply(apiResponse);
+        return apiResponse;
       }
 
       return knexClient
@@ -115,6 +112,7 @@ function apiController(
         .offset((query.cursor - 1) * query.limit)
         .map(prepareResponse)
         .then(createApiResponse)
+        .then(reply)
         .catch(reply);
     },
 
@@ -122,21 +120,21 @@ function apiController(
 
       function createApiResponse(result) {
         if (isEmpty(result)) {
-          reply(Boom.notFound('Row not found in ' + tableName));
-          return;
+          return Boom.notFound('Row not found in ' + tableName);
         }
 
-        reply(responseTransformFunction(result));
+        return responseTransformFunction(result);
       }
 
       return knexClient
         .table(tableName)
-        .where(tableIndex, request.params.id)
+        .where(primaryKey, request.params.id)
         .first()
         .then(createApiResponse)
+        .then(reply)
         .catch(reply);
     }
   };
 }
 
-export default apiController;
+export default createRouteHandler;
