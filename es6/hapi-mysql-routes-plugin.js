@@ -10,7 +10,7 @@ function register(server, options, next) {
   const knexClient = knex({
     client: 'mysql',
     connection: options.mysqlConfig,
-    debug: 'enabled',
+    debug: options.mysqlDebug,
     pool: {
       min: 0,
       max: 7

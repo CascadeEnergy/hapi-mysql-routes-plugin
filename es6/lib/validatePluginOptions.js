@@ -4,6 +4,7 @@ import keys from 'lodash/object/keys';
 function validatePluginOptions(options) {
   const requiredOptions = [ 'mysqlConfig', 'tableName', 'primaryKey' ];
   const allowedOptions = requiredOptions.concat([
+    'mysqlDebug',
     'requestTransformation',
     'responseTransformation',
     'show',

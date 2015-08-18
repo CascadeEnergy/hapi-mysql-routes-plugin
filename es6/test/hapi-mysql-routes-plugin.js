@@ -3,7 +3,7 @@ import {Server} from 'hapi';
 import hapiMysqlRoutes from '../hapi-mysql-routes-plugin';
 
 describe('hapi-mysql-routes-plugin', () => {
-  describe('validation', () => {
+  describe('Register Plugin', () => {
     it('should error if all the required options are not set', () => {
       function harness() {
         let server = new Server();
@@ -17,23 +17,6 @@ describe('hapi-mysql-routes-plugin', () => {
         }, err => err);
       }
       assert.throws(harness, Error);
-    });
-
-    it('should not error if all the required options are set', (done) => {
-      function harness() {
-        let server = new Server();
-        server.connection();
-        server.register({
-          register: hapiMysqlRoutes,
-          options: {
-            mysqlConfig: 'mysql',
-            primaryKey: 'primaryKey',
-            tableName: 'tableName'
-          }
-        }, err => err);
-      }
-      assert.doesNotThrow(harness);
-      done();
     });
   });
 });

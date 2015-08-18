@@ -51,6 +51,7 @@ api.register(
       register: hapiMysqlRoutes,
       options: {
         mysqlConfig: config.mysql,
+        mysqlDebug: 'enabled',
         primaryKey: config.primaryKey,
         tableName: config.tableName,
         requestTransformation: formatRequest,
