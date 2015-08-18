@@ -31,9 +31,9 @@ describe('hapi-mysql-routes-plugin', () => {
             tableName: 'tableName'
           }
         }, err => err);
-        done();
       }
       assert.doesNotThrow(harness);
+      done();
     });
   });
 });
