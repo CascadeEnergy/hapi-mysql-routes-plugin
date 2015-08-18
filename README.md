@@ -113,6 +113,10 @@ The name of the mysql table on which crud operations are to be performed.
 
 The primary key of the mysql table. This is constrained to be an auto-increment key.
 
+**mysqlDebug** `string` _optional_
+
+You can set this option to `'enabled'` if you would like to debug and view the MySql queries.
+
 **requestTransformation** `function` _optional_
 
 If this option is set, the function is applied to all the requests sent to the Route Handlers.
