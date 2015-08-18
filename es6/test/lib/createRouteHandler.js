@@ -344,16 +344,23 @@ describe('createRouteHandler', () => {
           });
       });
 
-    it('should return an empty array when at the end of the paginated list' +
-      ' of rows from the given mysql table',
+    it('should return an empty cursor when the end of the paginated list' +
+      ' has been reached',
       (done) => {
+        request.query.limit = 1;
+        requestTransform.returns({
+          name: 'test-name',
+          id: 100,
+          cursor: 0,
+          limit: 1
+        });
         knexClient.table.returnsThis();
         knexClient.where.returnsThis();
         knexClient.limit.returnsThis();
         knexClient.offset.returnsThis();
-        knexClient.map.returns(Bluebird.resolve({}));
+        knexClient.map.returns(Bluebird.resolve([{id: 1}]));
 
-        responseTransform.returns(Bluebird.resolve({}));
+        responseTransform.returns(Bluebird.resolve([{id: 1}]));
 
         routeHandler
           .list(request, reply)
@@ -363,7 +370,10 @@ describe('createRouteHandler', () => {
             assert(knexClient.limit.calledOnce);
             assert(knexClient.offset.calledOnce);
 
-            assert(reply.args[0][0], []);
+            assert(
+              reply.args[0][0],
+              { limit: 1, cursor: 1, records: [ { id: 1 } ] }
+            );
 
             done();
           });
