@@ -1,5 +1,6 @@
-'use strict';
 // jshint -W040
+
+'use strict';
 
 var _defineProperty = require('babel-runtime/helpers/define-property')['default'];
 

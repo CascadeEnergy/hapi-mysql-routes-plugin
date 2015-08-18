@@ -1,4 +1,3 @@
-'use strict';
 // jshint -W040
 
 import Boom from 'boom';

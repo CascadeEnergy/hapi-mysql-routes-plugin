@@ -1,5 +1,3 @@
-'use strict';
-
 import createRouteHandler from './lib/createRouteHandler';
 import get from 'lodash/object/get';
 import knex from 'knex';

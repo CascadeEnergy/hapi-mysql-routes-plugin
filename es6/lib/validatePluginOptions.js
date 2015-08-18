@@ -1,5 +1,3 @@
-'use strict';
-
 import includes from 'lodash/collection/includes';
 import keys from 'lodash/object/keys';
 

@@ -1,5 +1,3 @@
-'use strict';
-
 import assert from 'assert';
 import leche from 'leche';
 import validationPluginOptions from '../../lib/validatePluginOptions';

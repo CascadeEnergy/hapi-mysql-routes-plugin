@@ -1,4 +1,3 @@
-'use strict';
 //jshint camelcase: false
 //jshint maxstatements: false
 
