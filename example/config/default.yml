@@ -1,0 +1,10 @@
+mysql:
+ host:
+ database:
+ user:
+ password:
+ port:
+
+tableName:
+
+primaryKey:
