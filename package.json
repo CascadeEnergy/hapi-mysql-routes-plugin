@@ -11,7 +11,7 @@
     "email": "jinsyaoommen@gmail.com"
   },
   "license": "Proprietary",
-  "main": "es5/index.js",
+  "main": "es5/hapi-mysql-routes-plugin.js",
   "engines": {
     "node": ">=0.10.0"
   },
