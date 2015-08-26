@@ -1,6 +1,6 @@
 {
   "name": "hapi-mysql-routes-plugin",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Hapi plugin to create routes for crud operations on a MySql resource",
   "repository": {
     "type": "git",

@@ -79,6 +79,23 @@ describe('createRouteHandler', () => {
         });
     });
 
+    it('should create a row in the given mysql table and return payload if ' +
+    'the primary key is not an auto-increment key', (done) => {
+      knexClient.table.returnsThis();
+      knexClient.insert.returns(Bluebird.resolve([0]));
+
+      routeHandler
+        .create(request, reply)
+        .then(() => {
+          assert(knexClient.table.calledOnce);
+          assert(knexClient.insert.calledOnce);
+
+          assert(reply.args[0][0], { id: 100 });
+
+          done();
+        });
+    });
+
     it('should use custom request payload, if request.pre.customRequest ' +
       'has been defined', (done) => {
       request = {
@@ -124,6 +141,9 @@ describe('createRouteHandler', () => {
     let responseCode;
 
     beforeEach(() => {
+      requestTransform.returns({
+        name: 'test-name'
+      });
       responseCode = {code: sinon.stub()};
       reply = sinon.stub().returns(responseCode);
       request = {
@@ -138,6 +158,8 @@ describe('createRouteHandler', () => {
     });
 
     it('should delete a row from the given mysql table', (done) => {
+      const context = { where: sinon.spy() };
+
       knexClient.table.returnsThis();
       knexClient.where.returnsThis();
       knexClient.del.returns(Bluebird.resolve(1));
@@ -145,9 +167,16 @@ describe('createRouteHandler', () => {
       routeHandler
         .destroy(request, reply)
         .then(() => {
+          let filterQuery;
+
           assert(knexClient.table.calledOnce);
-          assert(knexClient.where.calledOnce);
+          assert(knexClient.where.calledTwice);
           assert(knexClient.del.calledOnce);
+
+          filterQuery = knexClient.where.args[1][0];
+          filterQuery.bind(context)();
+          assert(context.where.calledOnce);
+          assert(context.where.args[0], [ 'name', 'test-name' ]);
 
           assert(responseCode.code.args[0][0], 204);
 
@@ -155,7 +184,8 @@ describe('createRouteHandler', () => {
         });
     });
 
-    it('should return error if delete operation was not successful', (done) => {
+    it('should return error if delete operation was not successful',
+    (done) => {
         knexClient.table.returnsThis();
         knexClient.where.returnsThis();
         knexClient.del.returns(Bluebird.resolve(undefined));
@@ -164,7 +194,7 @@ describe('createRouteHandler', () => {
           .destroy(request, reply)
           .then(() => {
             assert(knexClient.table.calledOnce);
-            assert(knexClient.where.calledOnce);
+            assert(knexClient.where.calledTwice);
             assert(knexClient.del.calledOnce);
 
             assert(responseCode.code.args[0][0], 500);

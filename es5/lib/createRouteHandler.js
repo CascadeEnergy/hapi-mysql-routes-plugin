@@ -66,6 +66,16 @@ function createRouteHandler(knexClient, tableName, primaryKey) {
     },
 
     destroy: function destroy(request, reply) {
+      var query = requestTransformFunction(request.query);
+
+      function filterQuery() {
+        function constructWhere(value, key) {
+          this.where(key, value);
+        }
+
+        (0, _lodashCollectionForEach2['default'])(query, constructWhere, this);
+      }
+
       function createDeleteResponse(result) {
         if (result === 1 || result === 0) {
           reply().code(204);
@@ -74,7 +84,7 @@ function createRouteHandler(knexClient, tableName, primaryKey) {
         reply().code(500);
       }
 
-      return knexClient.table(tableName).where(primaryKey, request.params.id).del().then(createDeleteResponse)['catch'](reply);
+      return knexClient.table(tableName).where(primaryKey, request.params.id).where(filterQuery).del().then(createDeleteResponse)['catch'](reply);
     },
 
     list: function list(request, reply) {

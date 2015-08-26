@@ -40,6 +40,16 @@ function createRouteHandler(
     },
 
     destroy(request, reply) {
+      let query = requestTransformFunction(request.query);
+
+      function filterQuery() {
+        function constructWhere(value, key) {
+          this.where(key, value);
+        }
+
+        forEach(query, constructWhere, this);
+      }
+
       function createDeleteResponse(result) {
         if (result === 1 || result === 0) {
           reply().code(204);
@@ -51,6 +61,7 @@ function createRouteHandler(
       return knexClient
         .table(tableName)
         .where(primaryKey, request.params.id)
+        .where(filterQuery)
         .del()
         .then(createDeleteResponse)
         .catch(reply);
