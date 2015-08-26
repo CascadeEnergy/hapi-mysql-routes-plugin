@@ -16,7 +16,7 @@ var _lodashObjectKeys2 = _interopRequireDefault(_lodashObjectKeys);
 
 function validatePluginOptions(options) {
   var requiredOptions = ['mysqlConfig', 'tableName', 'primaryKey'];
-  var allowedOptions = requiredOptions.concat(['requestTransformation', 'responseTransformation', 'show', 'list', 'create', 'destroy']);
+  var allowedOptions = requiredOptions.concat(['mysqlDebug', 'requestTransformation', 'responseTransformation', 'show', 'list', 'create', 'destroy']);
 
   function validateAllowedOptions(value) {
     if (!(0, _lodashCollectionIncludes2['default'])(allowedOptions, value)) {

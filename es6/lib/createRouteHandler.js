@@ -25,6 +25,9 @@ function createRouteHandler(
       }
 
       function createApiResponse(response) {
+        if (first(response) === 0) {
+          return responseTransformFunction(payload);
+        }
         return responseTransformFunction({ [primaryKey]: first(response) });
       }
 

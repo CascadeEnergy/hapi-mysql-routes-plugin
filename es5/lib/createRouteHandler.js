@@ -56,6 +56,9 @@ function createRouteHandler(knexClient, tableName, primaryKey) {
       }
 
       function createApiResponse(response) {
+        if ((0, _lodashArrayFirst2['default'])(response) === 0) {
+          return responseTransformFunction(payload);
+        }
         return responseTransformFunction(_defineProperty({}, primaryKey, (0, _lodashArrayFirst2['default'])(response)));
       }
 
